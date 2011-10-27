@@ -1,0 +1,9 @@
+* disasm1
+SBCL & SLIME で slime-disassemble-symbol の表示をよりNASM的に表示する
+- いらない部分を削除
+- 結果にasm-modeを適用
+
+** コマンド
+- slime-disasm-symbol
+
+
