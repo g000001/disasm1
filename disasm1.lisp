@@ -9,6 +9,13 @@
 (defun disasm (object &key
                 (stream *standard-output*)
                 (use-labels t) )
+
+(compile nil '(defmacro foo (a . b)))
+
+
+(compile nil '(lambda () (defmacro foo (a  b))) )
+
+
   (declare (type (or function symbol cons) object)
            (type (or (member t) stream) stream)
            (type (member t nil) use-labels) )
@@ -23,20 +30,31 @@
           (disassemble1 funs) )))
   nil )
 
+(defun count-byte (string)
+  (nth-value 0
+    (floor (count-if (lambda (x) (digit-char-p x 16))
+                     string)
+           2)))
+
 (defun disasm-fun (fun &key stream (use-labels T))
   (let ((str (with-output-to-string (out)
                (sb-disassem:disassemble-fun fun
                                             :stream out
-                                            :use-labels use-labels) )))
-    (format stream " (~D line~:*~P)" (count #\Newline str))
-    (fresh-line stream)
+                                            :use-labels use-labels) ))
+        (bytes 0)
+        (sout (make-string-output-stream)))
+    (fresh-line sout)
     (ppcre:do-register-groups
          (addr label insthex inst)
          (";\\s+([\\dA-F]+:)\\s(L\\d+:|\\s+)\\s+([\\dA-F]+)\\s+(.*)" str)
-      (declare (ignore addr insthex))
-      ;(princ "; " stream)
-      (unless (zerop (length (string-trim '(#\Space) label)))
-        (princ label stream))
-      (format stream "~8T~A~%" inst))))
+                (declare (ignore addr))
+                (incf bytes (count-byte insthex))
+                (unless (zerop (length (string-trim '(#\Space) label)))
+                  (princ label sout))
+                (format sout "~8T~A~%" inst))
+    (format stream
+            " (assembled ~D byte~:*~P)~%~A"
+            bytes
+            (get-output-stream-string sout))))
 
 ;;; eof
