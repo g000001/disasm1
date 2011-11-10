@@ -4,7 +4,7 @@
 
 (defsystem :disasm1
   :serial t
-  :depends-on (:cl-ppcre :swank)
+  :depends-on (:cl-ppcre :swank :fiveam)
   :components ((:file "package")
                #+sbcl (:file "disasm1")
                (:file "slime-disasm")))
