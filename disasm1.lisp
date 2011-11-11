@@ -9,13 +9,6 @@
 (defun disasm (object &key
                 (stream *standard-output*)
                 (use-labels t) )
-
-(compile nil '(defmacro foo (a . b)))
-
-
-(compile nil '(lambda () (defmacro foo (a  b))) )
-
-
   (declare (type (or function symbol cons) object)
            (type (or (member t) stream) stream)
            (type (member t nil) use-labels) )
