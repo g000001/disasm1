@@ -6,6 +6,7 @@
 
 (in-suite disasm1)
 
+#+sbcl
 (defun disasm (object &key
                 (stream *standard-output*)
                 (use-labels t) )
@@ -23,12 +24,16 @@
           (disassemble1 funs) )))
   nil )
 
+#-sbcl
+(defun disasm (obj)
+  (cl:disassemble obj))
+
 (defun count-byte (string)
   (nth-value 0
     (floor (count-if (lambda (x) (digit-char-p x 16))
                      string)
            2)))
-
+#+sbcl
 (defun disasm-fun (fun &key stream (use-labels T))
   (let ((str (with-output-to-string (out)
                (sb-disassem:disassemble-fun fun
